@@ -1,0 +1,13 @@
+{% block content %}
+<h1>Create your new Tweet</h1>
+{% if form %}
+<form  method=POST>
+     {% csrf_token %}
+     {{ form.as_p }} 
+    <button type="submit" class="btn btn-secondary">Publish</button>
+    
+</form>
+{% endif %}
+</div>
+
+{% endblock %}
