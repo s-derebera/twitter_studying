@@ -1,12 +1,16 @@
-<h1>Twitter</h1>
-    <a href="/new">Create a tweet</a>
+{% extends 'tweets/base.html' %}
+{% block content %}
+    <h1>Twitter</h1>
+        <a href="/new">Create a tweet</a>
 
-{% if latest_tweet_list %}
-    <ul>
-    {% for tweet in latest_tweet_list %}
-        <li><p>{{tweet.tweet_text}}</p></li>
-    {% endfor %}
-    </ul>
-{% else %}
-    <p>No tweets are avaliable</p>
+    {% if latest_tweet_list %}
+        <ul>
+        {% for tweet in latest_tweet_list %}
+            <li><p>{{tweet.tweet_text}}</p></li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>No tweets are avaliable</p>
 {% endif %}
+
+{% endblock %}
