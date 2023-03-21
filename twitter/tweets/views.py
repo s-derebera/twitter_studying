@@ -31,6 +31,16 @@ def profile_list(request):
 def profile(request, pk):
     if request.user.is_authenticated:
         profile = Profile.objects.get(user_id=pk)
+        if request.method == "POST":
+            current_user = request.user.profile
+            action = request.POST["follow"]
+            if action == "follow":
+                current_user.follows.add(profile)
+            elif action == "unfollow":
+                current_user.follows.remove(profile)
+            current_user.save()
+        
+
         return render(request, 'tweets/profile.html',{ "profile":profile})
     else:
         messages.success(request, ('Create your page firstful! Waitig for join us!'))
