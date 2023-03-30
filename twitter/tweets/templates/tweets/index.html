@@ -1,12 +1,15 @@
 {% extends 'tweets/base.html' %}
 {% block content %}
     <h1>Twitter</h1>
+<br/>
         <a href="/new">Create a tweet</a>
 
     {% if latest_tweet_list %}
         <ul>
         {% for tweet in latest_tweet_list %}
-            <li><p>{{tweet.tweet_text}}</p></li>
+            <div class="alert alert-dark" role="alert">
+                {{tweet}}
+            </div><br/><br/>
         {% endfor %}
         </ul>
     {% else %}

@@ -5,10 +5,13 @@ from .forms import TweetForm
 from .models import Profile
 from django.contrib import messages
 
+
 def index(request):
-    latest_tweet_list = Tweet.objects.order_by('-pub_date')[:5]
-    context = { 'latest_tweet_list': latest_tweet_list}
-    return render(request, "tweets/index.html", context)
+    if request.user.is_authenticated:
+        latest_tweet_list = Tweet.objects.order_by('-pub_date')[:5]
+        context = {'latest_tweet_list': latest_tweet_list}
+        return render(request, "tweets/index.html", context)
+
 
 def new(request):
     form = TweetForm(request.POST or None)
@@ -17,8 +20,9 @@ def new(request):
             tweet = form.save()
             tweet.save()
             return redirect('index')
-    
-    return render(request, "tweets/new.html", {"form":form})
+
+    return render(request, "tweets/new.html", {"form": form})
+
 
 def profile_list(request):
     if request.user.is_authenticated:
@@ -28,9 +32,11 @@ def profile_list(request):
         messages.success(request, ('You must be log in to see that page'))
         return redirect('index')
 
+
 def profile(request, pk):
     if request.user.is_authenticated:
         profile = Profile.objects.get(user_id=pk)
+        tweets = Tweet.objects.filter(user_id=pk)
         if request.method == "POST":
             current_user = request.user.profile
             action = request.POST["follow"]
@@ -39,9 +45,13 @@ def profile(request, pk):
             elif action == "unfollow":
                 current_user.follows.remove(profile)
             current_user.save()
-        
 
-        return render(request, 'tweets/profile.html',{ "profile":profile})
+        return render(
+            request,
+            'tweets/profile.html',
+            {"profile": profile, "tweets": tweets}
+        )
     else:
-        messages.success(request, ('Create your page firstful! Waitig for join us!'))
+        messages.success(
+            request, ('Create your page firstful! Waitig for join us!'))
         return redirect('index')

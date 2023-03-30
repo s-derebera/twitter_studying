@@ -1,10 +1,23 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
+
 # Create your models here.
 class Tweet(models.Model):
+    user = models.ForeignKey(
+       User, related_name="tweets",
+       default=2,
+       on_delete=models.DO_NOTHING,
+    )
     tweet_text = models.CharField(max_length=160)
     pub_date = models.DateTimeField('date published', auto_now_add=True)
+
+    def __str__(self):
+       return(
+          f"{self.user}"
+          f"({self.pub_date:%Y-%m-%d %H:%M})"
+          f"{self.tweet_text}"
+       )
 
 class Profile(models.Model):
      user = models.OneToOneField(User, on_delete=models.CASCADE)
