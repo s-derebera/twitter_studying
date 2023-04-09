@@ -11,4 +11,4 @@ class TweetForm(forms.ModelForm):
 
     class Meta:
         model = Tweet
-        exclude = ("pub_date",)
+        exclude = ("user",)

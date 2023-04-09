@@ -4,6 +4,7 @@ from django.shortcuts import render
 from .forms import TweetForm
 from .models import Profile
 from django.contrib import messages
+from django.contrib.auth import authenticate, login, logout
 
 
 def index(request):
@@ -11,13 +12,17 @@ def index(request):
         latest_tweet_list = Tweet.objects.order_by('-pub_date')[:5]
         context = {'latest_tweet_list': latest_tweet_list}
         return render(request, "tweets/index.html", context)
+    else:
+        tweets = Tweet.objects.all().order_by("-pub_date")[:5]
+        return render(request, "tweets/index.html", {"tweets":tweets})
 
 
 def new(request):
     form = TweetForm(request.POST or None)
     if request.method == 'POST':
         if form.is_valid():
-            tweet = form.save()
+            tweet = form.save(commit=False)
+            tweet.user = request.user
             tweet.save()
             return redirect('index')
 
@@ -53,5 +58,30 @@ def profile(request, pk):
         )
     else:
         messages.success(
-            request, ('Create your page firstful! Waitig for join us!'))
+            request, ('Create your page firstful! Waiting for join us!'))
         return redirect('index')
+    
+def login_user(request):
+    if request.method == "POST":
+        username = request.POST['username']
+        password = request.POST ['password']
+        user = authenticate(request, username = username, password = password)
+        if user is not None:
+            login(request, user)
+            messages.success(request, ('You have been logged in!'))
+            return redirect('index')
+        else:
+            messages.success(request, ('There were an error! Please try again'))
+            return redirect('login')
+
+
+    else:
+        return render(request, "tweets/login.html", {})
+
+    return render(request, "tweets/login.html")
+
+
+def logout_user(request):
+    logout(request)
+    messages.success(request, ("You have been logged out! See you soon!"))
+    return redirect('index')
